@@ -5,7 +5,9 @@ const dbConnection = require('./configuration/dbConnection.js')
 const routes = require("./routes")
 var cors = require('cors');
 const PORT = process.env.PORT || 8000
+const dns = require("node:dns")
 
+dns.setServers(["8.8.8.8", "1.1.1.1"])
 app.use(cors())
 dbConnection()
 app.use(express.json())
@@ -16,4 +18,6 @@ app.get('/', function (req, res) {
   res.send('Todo Application')
 })
 
-app.listen(PORT)
+app.listen(PORT, ()=>{
+  console.log(`Server is running on: http://localhost:${PORT}`)
+})
