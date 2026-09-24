@@ -12,7 +12,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'node-2602',
-    allowed_formats: ["png", "jpeg", "jpg"]
+    allowed_formats: ["png", "jpeg", "jpg", "webp"]
   },
 });
 
