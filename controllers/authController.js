@@ -1,6 +1,7 @@
 
 
 let registrationController = async (req, res) => {
+    console.log("hello")
     if (!req.file) {
         return res.status(400).json({ message: "Picture is required" });
     }
