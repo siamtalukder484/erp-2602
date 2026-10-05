@@ -7,7 +7,8 @@ const upload = require("../../middleware/fileUpload")
 router.post("/login",(req, res)=>{
     console.log("ami login route")
 } ) 
-router.post("/registration",upload.single('picture'), authController.registrationController)
+// router.post("/registration",upload.single('picture'), authController.registrationController)
+router.post("/registration", authController.registrationController)
 
 
 
