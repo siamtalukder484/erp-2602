@@ -51,21 +51,26 @@ let registrationController = async (req, res) => {
         })
     }
 
+    const hashedPass = await bcrypt.hash(password, 12) 
+
+
     // const user = new userModel(
     //     {
     //        username, email, password, profilePicture, address, phone, gender, dob 
     //     }
     // )
     // await user.save()
+
+
     const user = await userModel.create({
-        username, email, password, profilePicture, address, phone, gender, dob
+        username, email, password: hashedPass, profilePicture, address, phone, gender, dob
     })
 
     res.status(200).json({
         success: true, 
         message: "Registration Successfully",
         data: {
-            username, email
+            username, email, hashedPass
         }
 
     })

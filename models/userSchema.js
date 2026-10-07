@@ -31,10 +31,16 @@ const userSchema = new Schema(
     gender: {
       type: String,
       enum: ["male", "female", "others"],
+      default: "male"
     },
     dob: {
       type: String,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    
   },
   { timestamps: true },
 );
