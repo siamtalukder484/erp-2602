@@ -250,7 +250,7 @@ const resendVerificationController = async (req, res) => {
     );
     await user.save({ validateBeforeSave: false });
 
-    await sendVerificationEmail(user.email, plainVerificationToken);
+    await sendVerificationEmail(user.email, user.username, plainVerificationToken);
 
     return res.status(200).json({
       success: true,

@@ -5,7 +5,6 @@ const { protect } = require("../../middleware/authMiddleware");
 const upload = require("../../middleware/fileUpload");
 
 router.post("/registration", authController.registrationController);
-router.post("/register", authController.registrationController);
 router.post("/login", authController.loginController);
 
 router.get("/verify-email/:token", authController.verifyEmailController);
