@@ -34,6 +34,7 @@ const registrationController = async (req, res) => {
       phone,
       gender,
       dob,
+      role
     } = req.body;
 
     if (!username) {
@@ -92,6 +93,7 @@ const registrationController = async (req, res) => {
       phone,
       gender,
       dob,
+      role,
       emailVerificationToken: hashToken(plainVerificationToken),
       emailVerificationTokenExpires: new Date(Date.now() + VERIFICATION_EXPIRE_MS),
     });
@@ -463,6 +465,7 @@ const getMeController = async (req, res) => {
         phone: user.phone,
         gender: user.gender,
         dob: user.dob,
+        role: user.role
       },
     });
   } catch (error) {

@@ -37,6 +37,11 @@ const userSchema = new Schema(
     dob: {
       type: String,
     },
+    role: {
+      type: String,
+      enum: ["admin", "employee", "user"],
+      default: "user"
+    },
     isEmailVerified: {
       type: Boolean,
       default: false,

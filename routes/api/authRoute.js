@@ -3,13 +3,19 @@ const router = express.Router();
 const authController = require("../../controllers/authController");
 const { protect } = require("../../middleware/authMiddleware");
 const upload = require("../../middleware/fileUpload");
+const rateLimiter = require('../../middleware/rateLimiter')
 
-router.post("/registration", authController.registrationController);
-router.post("/login", authController.loginController);
+
+
+router.post("/registration",rateLimiter.registrationlimiter, authController.registrationController);
+router.post("/login", rateLimiter.loginlimiter, authController.loginController);
 
 router.get("/verify-email/:token", authController.verifyEmailController);
 
-router.post("/resend-verification", authController.resendVerificationController);
+router.post(
+  "/resend-verification",
+  authController.resendVerificationController,
+);
 router.post("/refresh-token", authController.refreshTokenController);
 router.post("/logout", authController.logoutController);
 
