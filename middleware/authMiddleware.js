@@ -23,4 +23,15 @@ const protect = (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+const requiedAdmin = (req, res, next) => {
+  console.log("siam",req.user.isEmailVerified)
+  if(req.user.role !== "admin"){
+    return res.status(403).json({
+      success: false,
+      message: "Admin access required."
+    })
+  }
+  next()
+}
+
+module.exports = { protect, requiedAdmin };
