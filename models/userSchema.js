@@ -19,6 +19,7 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       required: true,
+      select: false,
     },
     profilePicture: {
       type: String,
