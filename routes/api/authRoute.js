@@ -23,7 +23,7 @@ router.post("/forgot-password", authController.forgotPasswordController);
 router.post("/reset-password/:token", authController.resetPasswordController);
 
 router.get("/me", protect, authController.getMeController);
+router.patch("/update-profile", protect, upload.single('picture'), authController.updateProfile);
 
-// router.post("/registration", upload.single("picture"), authController.registrationController);
 
 module.exports = router;

@@ -34,7 +34,7 @@ const registrationController = async (req, res) => {
       phone,
       gender,
       dob,
-      role
+      role,
     } = req.body;
 
     if (!username) {
@@ -83,7 +83,6 @@ const registrationController = async (req, res) => {
 
     const plainVerificationToken = generateSecureToken();
 
-
     const user = await userModel.create({
       username,
       email,
@@ -95,11 +94,17 @@ const registrationController = async (req, res) => {
       dob,
       role,
       emailVerificationToken: hashToken(plainVerificationToken),
-      emailVerificationTokenExpires: new Date(Date.now() + VERIFICATION_EXPIRE_MS),
+      emailVerificationTokenExpires: new Date(
+        Date.now() + VERIFICATION_EXPIRE_MS,
+      ),
     });
 
     try {
-      await sendVerificationEmail(user.email, user.username, plainVerificationToken);
+      await sendVerificationEmail(
+        user.email,
+        user.username,
+        plainVerificationToken,
+      );
     } catch (mailError) {
       await userModel.findByIdAndDelete(user._id);
       console.error("Verification email failed:", mailError);
@@ -137,7 +142,9 @@ const loginController = async (req, res) => {
       });
     }
 
-    const user = await userModel.findOne({ email }).select("+password +refreshToken");
+    const user = await userModel
+      .findOne({ email })
+      .select("+password +refreshToken");
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,
@@ -166,7 +173,7 @@ const loginController = async (req, res) => {
           phone: user.phone,
           gender: user.gender,
           dob: user.dob,
-          isEmailVerified: user.isEmailVerified
+          isEmailVerified: user.isEmailVerified,
         },
         accessToken,
         refreshToken,
@@ -241,7 +248,8 @@ const resendVerificationController = async (req, res) => {
     if (!user) {
       return res.status(200).json({
         success: true,
-        message: "If that email is registered, a verification link has been sent",
+        message:
+          "If that email is registered, a verification link has been sent",
       });
     }
     if (user.isEmailVerified) {
@@ -258,7 +266,11 @@ const resendVerificationController = async (req, res) => {
     );
     await user.save({ validateBeforeSave: false });
 
-    await sendVerificationEmail(user.email, user.username, plainVerificationToken);
+    await sendVerificationEmail(
+      user.email,
+      user.username,
+      plainVerificationToken,
+    );
 
     return res.status(200).json({
       success: true,
@@ -439,7 +451,8 @@ const resetPasswordController = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Password reset successful. Please log in with your new password.",
+      message:
+        "Password reset successful. Please log in with your new password.",
     });
   } catch (error) {
     console.error(error);
@@ -471,7 +484,7 @@ const getMeController = async (req, res) => {
         phone: user.phone,
         gender: user.gender,
         dob: user.dob,
-        role: user.role
+        role: user.role,
       },
     });
   } catch (error) {
@@ -479,6 +492,48 @@ const getMeController = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Could not fetch profile",
+    });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    let updateUser = await userModel.findByIdAndUpdate(
+      req.user.id,
+      { $set: req.body },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!updateUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
+    }
+
+    if (req.file) {
+      updateUser = await userModel.findByIdAndUpdate(
+        req.user.id,
+        { profilePicture: req.file.path },
+        {
+          new: true,
+          runValidators: true,
+        },
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile Updated Successfully.",
+      data: updateUser,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
     });
   }
 };
@@ -493,4 +548,5 @@ module.exports = {
   forgotPasswordController,
   resetPasswordController,
   getMeController,
+  updateProfile,
 };
