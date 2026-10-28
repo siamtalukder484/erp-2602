@@ -35,11 +35,96 @@ const getAllUserController = async (req, res) => {
     })
   } catch (error) {
       res.send("catch error")
-    
   }
 };
 
+const getSingleUserController = async (req, res) => {
+  const userId = req.params.id
+  try {
+
+    const user = await userModel.findOne({
+      _id: userId
+    })
+    res.status(200).json({
+        success: true,
+        message: "User get successfully",
+        data: user,
+    })
+  } catch (error) {
+      res.status(409).json({
+        success: false,
+        message: error.message,
+        userId: userId
+      })
+  }
+}
+
+const approvedUserController = async (req, res) => {
+
+  try {
+    const updateUser = await userModel.findByIdAndUpdate(
+      req.params.id,
+      { status: true },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "User approved Successfully.",
+      data: updateUser,
+    });
+  } catch (error) {
+    res.status(409).json({
+        success: false,
+        message: error.message,
+      })
+  }
+}
+const deactiveUserController = async (req, res) => {
+  try {
+    const updateUser = await userModel.findByIdAndUpdate(
+      req.params.id,
+      { status: false },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "User deactive Successfully.",
+      data: updateUser,
+    });
+  } catch (error) {
+    res.status(409).json({
+        success: false,
+        message: error.message,
+      })
+  }
+}
+const deleteUserController = async (req, res) => {
+  try {
+    const deleteUser = await userModel.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: "User delete Successfully.",
+    });
+  } catch (error) {
+    res.status(409).json({
+        success: false,
+        message: error.message,
+      })
+  }
+}
 
 module.exports = {
-    getAllUserController
+    getAllUserController,
+    getSingleUserController,
+    approvedUserController,
+    deleteUserController, 
+    deactiveUserController
 }

@@ -142,6 +142,7 @@ const loginController = async (req, res) => {
       });
     }
 
+
     const user = await userModel
       .findOne({ email })
       .select("+password +refreshToken");
@@ -155,6 +156,12 @@ const loginController = async (req, res) => {
       return res.status(403).json({
         success: false,
         message: "Please verify your email before logging in",
+      });
+    }
+    if (!user.status) {
+      return res.status(403).json({
+        success: false,
+        message: "Please contact your admin to approved you account",
       });
     }
 
@@ -173,6 +180,7 @@ const loginController = async (req, res) => {
           phone: user.phone,
           gender: user.gender,
           dob: user.dob,
+          role: user.role,
           isEmailVerified: user.isEmailVerified,
         },
         accessToken,
