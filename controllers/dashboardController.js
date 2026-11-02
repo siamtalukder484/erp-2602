@@ -21,9 +21,25 @@ const getAllUserController = async (req, res) => {
   try {
     const loggedinUserId = req.user.id
     const loggedinUser = await userModel.findById(loggedinUserId)
-    const users = await userModel.find({
+    const search = req.query.search ? req.query.search.trim() : ""
+    const page = 1
+    const limit = 5
+
+    const filter = {
       _id: {$ne: loggedinUserId}
-    })
+    }
+    
+    if(search){
+      const searchRegex = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      filter.$or = [
+        {username: {$regex: searchRegex, $options: "i"}},
+        {email: {$regex: searchRegex, $options: "i"}}
+      ]
+    }
+
+    const users = await userModel.find(filter)
+
+    
     res.status(200).json({
         success: true,
         message: "Users get successfully",
