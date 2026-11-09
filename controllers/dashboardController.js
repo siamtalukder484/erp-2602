@@ -22,11 +22,18 @@ const getAllUserController = async (req, res) => {
     const loggedinUserId = req.user.id
     const loggedinUser = await userModel.findById(loggedinUserId)
     const search = req.query.search ? req.query.search.trim() : ""
-    const page = 1
     const limit = 5
+    const page = req.query.page === undefined ? 1 : Number(req.query.page)
+
+    if (!Number.isInteger(page) || page < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Page must be a positive integer",
+      })
+    }
 
     const filter = {
-      _id: {$ne: loggedinUserId}
+      _id: {$ne: loggedinUserId},
     }
     
     if(search){
@@ -37,7 +44,10 @@ const getAllUserController = async (req, res) => {
       ]
     }
 
-    const users = await userModel.find(filter)
+    const [users, totalUsers] = await Promise.all([
+      userModel.find(filter).skip((page - 1) * limit).limit(limit),
+      userModel.countDocuments(filter),
+    ])
 
     
     res.status(200).json({
@@ -45,7 +55,10 @@ const getAllUserController = async (req, res) => {
         message: "Users get successfully",
         data: {
           users: users.map(formatUser),
-          length: users.length
+          length: totalUsers,
+          page,
+          limit,
+          totalPages: Math.ceil(totalUsers / limit),
         },
         loggedinuser: loggedinUser
     })
