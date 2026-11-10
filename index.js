@@ -17,7 +17,7 @@ app.use('/uploads', express.static('uploads'));
 
 
 app.get('/', function (req, res) {
-  res.send('Todo Application')
+  res.send(`<h1>Application is running on: http://localhost:${PORT}</h1>`)
 })
 
 app.listen(PORT, ()=>{
